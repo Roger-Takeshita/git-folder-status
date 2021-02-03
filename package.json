@@ -1,0 +1,37 @@
+{
+    "name": "git-status",
+    "version": "1.0.0",
+    "description": "Returns the status of nested git repositories",
+    "main": "src/index.js",
+    "scripts": {
+        "lint": "eslint src/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Roger-Takeshita/git-status.git"
+    },
+    "keywords": [
+        "git",
+        "gh",
+        "github",
+        "status",
+        "repository",
+        "repositories",
+        "cli",
+        "command"
+    ],
+    "author": "Roger Takeshita",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Roger-Takeshita/git-status/issues"
+    },
+    "homepage": "https://github.com/Roger-Takeshita/git-status#readme",
+    "dependencies": {
+        "chalk": "^4.1.0"
+    },
+    "devDependencies": {
+        "eslint": "^7.19.0",
+        "eslint-config-airbnb-base": "^14.2.1",
+        "eslint-plugin-import": "^2.22.1"
+    }
+}
