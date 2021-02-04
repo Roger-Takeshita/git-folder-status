@@ -6,16 +6,66 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+const checkFileStatus = (file) => {
+    let mode = 'modified-file';
+    let name = file;
+
+    if (file.includes('deleted:')) {
+        mode = 'deleted-file';
+        name = file.replace(/deleted:[ ]*/gm, '');
+    } else if (file.includes('new file:')) {
+        mode = 'new-file';
+        name = file.replace(/new file:[ ]*/gm, '');
+    }
+
+    return { mode, name };
+};
+
+const listPusher = (
+    file,
+    mode,
+    stagedNewFiles,
+    stagedModifiedFiles,
+    stagedDeletedFiles,
+    notStagedModifiedActiveFiles,
+    notStagedDeletedFiles,
+    untrackedFiles,
+) => {
+    switch (mode) {
+        case 'staged':
+            if (file.mode === 'modified-file') {
+                stagedModifiedFiles.push(file.name);
+            } else if (file.mode === 'deleted-file') {
+                stagedDeletedFiles.push(file.name);
+            } else {
+                stagedNewFiles.push(file.name);
+            }
+            break;
+        case 'not-staged':
+            if (file.mode === 'modified-file') {
+                notStagedModifiedActiveFiles.push(file.name);
+            } else {
+                notStagedDeletedFiles.push(file.name);
+            }
+            break;
+        default:
+            untrackedFiles.push(file.name);
+            break;
+    }
+};
+
 const gitStatus = (currentPath) => {
     const gitExists = `${currentPath}/.git`;
 
     if (gitExists) {
         try {
             let mode = '';
-            const stagedOld = [];
-            const stagedNew = [];
-            const modified = [];
-            const untracked = [];
+            const stagedModifiedFiles = [];
+            const stagedNewFiles = [];
+            const stagedDeletedFiles = [];
+            const notStagedModifiedActiveFiles = [];
+            const notStagedDeletedFiles = [];
+            const untrackedFiles = [];
             const files = Buffer.from(execSync('git status')).toString();
             const filesArray = files
                 .replace(/\t/gm, '')
@@ -28,7 +78,7 @@ const gitStatus = (currentPath) => {
                         mode = 'staged';
                         continue;
                     case 'Changes not staged for commit:':
-                        mode = 'modified';
+                        mode = 'not-staged';
                         continue;
                     case 'Untracked files:':
                         mode = 'untracked';
@@ -37,47 +87,30 @@ const gitStatus = (currentPath) => {
                         break;
                 }
 
-                if (mode === 'staged' && filesArray[i] !== '' && !filesArray[i].includes('(use')) {
-                    const file = filesArray[i].replace(/new file:[ ]*/gm, '');
-                    if (file) {
-                        stagedNew.push(file);
-                    } else {
-                        stagedOld.push(filesArray[i]);
-                    }
-                } else if (
-                    mode === 'modified' &&
-                    filesArray[i] !== '' &&
-                    !filesArray[i].includes('(use')
-                ) {
-                    modified.push(filesArray[i]);
-                } else if (
-                    mode === 'untracked' &&
-                    filesArray[i] !== '' &&
-                    !filesArray[i].includes('(use')
-                ) {
-                    untracked.push(filesArray[i]);
+                if (mode && filesArray[i] && !filesArray[i].includes('(use')) {
+                    const file = checkFileStatus(filesArray[i]);
+
+                    listPusher(
+                        file,
+                        mode,
+                        stagedNewFiles,
+                        stagedModifiedFiles,
+                        stagedDeletedFiles,
+                        notStagedModifiedActiveFiles,
+                        notStagedDeletedFiles,
+                        untrackedFiles,
+                    );
                 }
             }
 
             console.log({
-                stagedOld,
-                stagedNew,
-                modified,
-                untracked,
+                stagedNewFiles,
+                stagedModifiedFiles,
+                stagedDeletedFiles,
+                notStagedModifiedActiveFiles,
+                notStagedDeletedFiles,
+                untrackedFiles,
             });
-
-            // const newFiles = files.match(/new file: (.)*/gi);
-            // console.log('new files', newFiles);
-
-            // const modifiedFiles = files.match(/modified: (.)*/gi);
-            // const modifiedFiles1 = modifiedFiles.map((file) => file.replace(/modified:[ ]*/i, ''));
-            // console.log('modified', modifiedFiles1);
-
-            // const untrackedFiles = files.match(/Untracked files:([[.\n\W\w]*)/gi);
-            // const untrackedFiles1 = untrackedFiles[0].replace(/\t/gm, '');
-            // const untrackedFiles2 = untrackedFiles1.split('\n');
-            // const untrackedFiles3 = untrackedFiles2.slice(2, untrackedFiles2.length - 3);
-            // console.log('untracked', untrackedFiles3);
         } catch (error) {
             console.log(error);
         }
