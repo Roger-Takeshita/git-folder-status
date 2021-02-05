@@ -4,117 +4,27 @@ const chalk = require('chalk');
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { gitStatus } = require('./git');
 
-const checkFileStatus = (file) => {
-    let mode = 'modified-file';
-    let name = file;
+const folders = (path) => {
+    const dir = fs.opendirSync(path);
+    let dirent;
 
-    if (file.includes('deleted:')) {
-        mode = 'deleted-file';
-        name = file.replace(/deleted:[ ]*/gm, '');
-    } else if (file.includes('new file:')) {
-        mode = 'new-file';
-        name = file.replace(/new file:[ ]*/gm, '');
-    }
-
-    return { mode, name };
-};
-
-const listPusher = (
-    file,
-    mode,
-    stagedNewFiles,
-    stagedModifiedFiles,
-    stagedDeletedFiles,
-    notStagedModifiedActiveFiles,
-    notStagedDeletedFiles,
-    untrackedFiles,
-) => {
-    switch (mode) {
-        case 'staged':
-            if (file.mode === 'modified-file') {
-                stagedModifiedFiles.push(file.name);
-            } else if (file.mode === 'deleted-file') {
-                stagedDeletedFiles.push(file.name);
-            } else {
-                stagedNewFiles.push(file.name);
+    console.log(path);
+    gitStatus(path);
+    while ((dirent = dir.readSync()) !== null) {
+        const nextPath = `${path}/${dirent.name}`;
+        if (fs.lstatSync(nextPath).isDirectory()) {
+            if (
+                dirent.name !== '.git' &&
+                dirent.name !== 'node_modules' &&
+                dirent.name !== 'node_modules.nosync'
+            ) {
+                folders(nextPath);
             }
-            break;
-        case 'not-staged':
-            if (file.mode === 'modified-file') {
-                notStagedModifiedActiveFiles.push(file.name);
-            } else {
-                notStagedDeletedFiles.push(file.name);
-            }
-            break;
-        default:
-            untrackedFiles.push(file.name);
-            break;
-    }
-};
-
-const gitStatus = (currentPath) => {
-    const gitExists = `${currentPath}/.git`;
-
-    if (gitExists) {
-        try {
-            let mode = '';
-            const stagedModifiedFiles = [];
-            const stagedNewFiles = [];
-            const stagedDeletedFiles = [];
-            const notStagedModifiedActiveFiles = [];
-            const notStagedDeletedFiles = [];
-            const untrackedFiles = [];
-            const files = Buffer.from(execSync('git status')).toString();
-            const filesArray = files
-                .replace(/\t/gm, '')
-                .replace(/modified:[ ]*/gm, '')
-                .split('\n');
-
-            for (let i = 0; i < filesArray.length; i += 1) {
-                switch (filesArray[i]) {
-                    case 'Changes to be committed:':
-                        mode = 'staged';
-                        continue;
-                    case 'Changes not staged for commit:':
-                        mode = 'not-staged';
-                        continue;
-                    case 'Untracked files:':
-                        mode = 'untracked';
-                        continue;
-                    default:
-                        break;
-                }
-
-                if (mode && filesArray[i] && !filesArray[i].includes('(use')) {
-                    const file = checkFileStatus(filesArray[i]);
-
-                    listPusher(
-                        file,
-                        mode,
-                        stagedNewFiles,
-                        stagedModifiedFiles,
-                        stagedDeletedFiles,
-                        notStagedModifiedActiveFiles,
-                        notStagedDeletedFiles,
-                        untrackedFiles,
-                    );
-                }
-            }
-
-            console.log({
-                stagedNewFiles,
-                stagedModifiedFiles,
-                stagedDeletedFiles,
-                notStagedModifiedActiveFiles,
-                notStagedDeletedFiles,
-                untrackedFiles,
-            });
-        } catch (error) {
-            console.log(error);
         }
     }
+    dir.closeSync();
 };
 
-gitStatus(process.cwd());
+folders(process.cwd());

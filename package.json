@@ -6,6 +6,7 @@
     "scripts": {
         "lint": "eslint src/"
     },
+    "bin": "./src/index.js",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/Roger-Takeshita/git-status.git"
