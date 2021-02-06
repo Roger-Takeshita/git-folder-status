@@ -1,5 +1,7 @@
+const chalk = require('chalk');
 const fs = require('fs');
-const { execSync } = require('child_process');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 
 const checkFileStatus = (file) => {
     let mode = 'modified-file';
@@ -49,9 +51,10 @@ const listPusher = (
     }
 };
 
-const gitStatus = (path) => {
+const gitStatus = async (path) => {
     if (fs.existsSync(`${path}/.git`)) {
         try {
+            process.chdir(path);
             let mode = '';
             const stagedModifiedFiles = [];
             const stagedNewFiles = [];
@@ -59,8 +62,8 @@ const gitStatus = (path) => {
             const notStagedModifiedActiveFiles = [];
             const notStagedDeletedFiles = [];
             const untrackedFiles = [];
-            const files = Buffer.from(execSync('git status')).toString();
-            const filesArray = files
+            const { stdout } = await exec('git status');
+            const filesArray = stdout
                 .replace(/\t/gm, '')
                 .replace(/modified:[ ]*/gm, '')
                 .split('\n');
@@ -96,6 +99,7 @@ const gitStatus = (path) => {
                 }
             }
 
+            console.log(path);
             console.log({
                 stagedNewFiles,
                 stagedModifiedFiles,
@@ -104,10 +108,14 @@ const gitStatus = (path) => {
                 notStagedDeletedFiles,
                 untrackedFiles,
             });
+
+            return true;
         } catch (error) {
             console.log(error);
         }
     }
+
+    return false;
 };
 
 module.exports = {
