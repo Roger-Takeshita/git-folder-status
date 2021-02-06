@@ -1,7 +1,43 @@
 const chalk = require('chalk');
 const fs = require('fs');
+const path = require('path');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
+
+class FileStatus {
+    constructor() {
+        this.stagedModifiedFiles = [];
+        this.stagedNewFiles = [];
+        this.stagedDeletedFiles = [];
+        this.notStagedModifiedActiveFiles = [];
+        this.notStagedDeletedFiles = [];
+        this.untrackedFiles = [];
+        this.counter = 0;
+    }
+    sortFile(file, mode) {
+        switch (mode) {
+            case 'staged':
+                if (file.mode === 'modified-file') {
+                    this.stagedModifiedFiles.push(file.name);
+                } else if (file.mode === 'deleted-file') {
+                    this.stagedDeletedFiles.push(file.name);
+                } else {
+                    this.stagedNewFiles.push(file.name);
+                }
+                break;
+            case 'not-staged':
+                if (file.mode === 'modified-file') {
+                    this.notStagedModifiedActiveFiles.push(file.name);
+                } else {
+                    this.notStagedDeletedFiles.push(file.name);
+                }
+                break;
+            default:
+                this.untrackedFiles.push(file.name);
+                break;
+        }
+    }
+}
 
 const checkFileStatus = (file) => {
     let mode = 'modified-file';
@@ -18,50 +54,12 @@ const checkFileStatus = (file) => {
     return { mode, name };
 };
 
-const listPusher = (
-    file,
-    mode,
-    stagedNewFiles,
-    stagedModifiedFiles,
-    stagedDeletedFiles,
-    notStagedModifiedActiveFiles,
-    notStagedDeletedFiles,
-    untrackedFiles,
-) => {
-    switch (mode) {
-        case 'staged':
-            if (file.mode === 'modified-file') {
-                stagedModifiedFiles.push(file.name);
-            } else if (file.mode === 'deleted-file') {
-                stagedDeletedFiles.push(file.name);
-            } else {
-                stagedNewFiles.push(file.name);
-            }
-            break;
-        case 'not-staged':
-            if (file.mode === 'modified-file') {
-                notStagedModifiedActiveFiles.push(file.name);
-            } else {
-                notStagedDeletedFiles.push(file.name);
-            }
-            break;
-        default:
-            untrackedFiles.push(file.name);
-            break;
-    }
-};
-
-const gitStatus = async (path) => {
-    if (fs.existsSync(`${path}/.git`)) {
+const gitStatus = async (currentPath) => {
+    if (fs.existsSync(`${currentPath}/.git`)) {
         try {
-            process.chdir(path);
+            const folder = new FileStatus();
+            process.chdir(currentPath);
             let mode = '';
-            const stagedModifiedFiles = [];
-            const stagedNewFiles = [];
-            const stagedDeletedFiles = [];
-            const notStagedModifiedActiveFiles = [];
-            const notStagedDeletedFiles = [];
-            const untrackedFiles = [];
             const { stdout } = await exec('git status');
             const filesArray = stdout
                 .replace(/\t/gm, '')
@@ -86,28 +84,15 @@ const gitStatus = async (path) => {
                 if (mode && filesArray[i] && !filesArray[i].includes('(use')) {
                     const file = checkFileStatus(filesArray[i]);
 
-                    listPusher(
-                        file,
-                        mode,
-                        stagedNewFiles,
-                        stagedModifiedFiles,
-                        stagedDeletedFiles,
-                        notStagedModifiedActiveFiles,
-                        notStagedDeletedFiles,
-                        untrackedFiles,
-                    );
+                    folder.sortFile(file, mode);
+                    folder.counter++;
                 }
             }
 
-            console.log(path);
-            console.log({
-                stagedNewFiles,
-                stagedModifiedFiles,
-                stagedDeletedFiles,
-                notStagedModifiedActiveFiles,
-                notStagedDeletedFiles,
-                untrackedFiles,
-            });
+            if (folder.counter) {
+                console.log(path.basename(path.resolve(currentPath)));
+                console.log(folder);
+            }
 
             return true;
         } catch (error) {

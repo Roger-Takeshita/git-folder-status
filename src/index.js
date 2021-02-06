@@ -1,17 +1,21 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const fsPromises = fs.promises;
 const { gitStatus } = require('./git');
 
-const folders = async (path) => {
-    const dir = fs.opendirSync(path);
-    let dirent;
+const folders = async (currentPath) => {
+    const gitFolder = await gitStatus(currentPath);
 
-    const gitFolder = await gitStatus(path);
     if (!gitFolder) {
-        while ((dirent = dir.readSync()) !== null) {
-            const nextPath = `${path}/${dirent.name}`;
-            if (fs.lstatSync(nextPath).isDirectory()) {
+        const dir = await fsPromises.opendir(currentPath);
+        let dirent = await dir.read();
+
+        while (dirent !== null) {
+            const nextPath = `${currentPath}/${dirent.name}`;
+            const nextDir = await fsPromises.lstat(nextPath);
+
+            if (nextDir.isDirectory()) {
                 if (
                     dirent.name !== '.git' &&
                     dirent.name !== 'node_modules' &&
@@ -20,8 +24,11 @@ const folders = async (path) => {
                     folders(nextPath);
                 }
             }
+
+            dirent = await dir.read();
         }
-        dir.closeSync();
+
+        await dir.close();
     }
 };
 
