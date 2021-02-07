@@ -4,6 +4,22 @@ const path = require('path');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
+const rgb = {
+    white: 'rgb(255,255,255)',
+    green: 'rgb(51, 153, 51)',
+    orange: 'rgb(255, 153, 51)',
+    red: 'rgb(255, 77, 77)',
+};
+
+const bgRgb = {
+    green: 'bgRgb(51, 153, 51)',
+    greenD: 'bgRgb(0, 102, 0)',
+    orange: 'bgRgb(255, 153, 51)',
+    orangeD: 'bgRgb(255, 102, 0)',
+    red: 'bgRgb(255, 77, 77)',
+    redD: 'bgRgb(204, 0, 0)',
+};
+
 class FileStatus {
     constructor() {
         this.stagedModifiedFiles = [];
@@ -58,44 +74,60 @@ const checkFileStatus = (file) => {
     return { mode, name };
 };
 
-const printStatus = (files) => {
+const printFileStatus = (files) => {
     console.log();
     if (files.commitAheadMsg) {
         console.log(
-            chalk`    {rgb(255,255,255).bgRgb(51, 153, 51)  C } {green ${files.commitAheadMsg}}`,
+            chalk`    {${rgb.white}.${bgRgb.green}  C } {green ${files.commitAheadMsg}}`,
         );
     }
     files.stagedModifiedFiles.forEach((file) =>
         console.log(
-            chalk`    {rgb(255,255,255).bgRgb(51, 153, 51)  M } {green ${file}}`,
+            chalk`    {${rgb.white}.${bgRgb.green}  M } {green ${file}}`,
         ),
     );
     files.stagedNewFiles.forEach((file) =>
         console.log(
-            chalk`    {rgb(255,255,255).bgRgb(51, 153, 51)  N } {green ${file}}`,
+            chalk`    {${rgb.white}.${bgRgb.green}  N } {green ${file}}`,
         ),
     );
     files.stagedDeletedFiles.forEach((file) =>
         console.log(
-            chalk`    {rgb(255,255,255).bgRgb(51, 153, 51)  D } {green ${file}}`,
+            chalk`    {${rgb.white}.${bgRgb.green}  D } {green ${file}}`,
         ),
     );
     files.notStagedModifiedActiveFiles.forEach((file) =>
-        console.log(
-            chalk`    {rgb(255,255,255).bgRgb(255, 77, 77)  M } {red ${file}}`,
-        ),
+        console.log(chalk`    {${rgb.white}.${bgRgb.red}  M } {red ${file}}`),
     );
     files.notStagedDeletedFiles.forEach((file) =>
-        console.log(
-            chalk`    {rgb(255,255,255).bgRgb(255, 77, 77)  D } {red ${file}}`,
-        ),
+        console.log(chalk`    {${rgb.white}.${bgRgb.red}  D } {red ${file}}`),
     );
     files.untrackedFiles.forEach((file) =>
         console.log(
-            chalk`    {rgb(255,255,255).bgRgb(230, 138, 0)  ? } {rgb(230, 138, 0) ${file}}`,
+            chalk`    {${rgb.white}.${bgRgb.orange}  ? } {${rgb.orange} ${file}}`,
         ),
     );
     console.log();
+};
+
+const printFolderStatus = (currentPath, folder) => {
+    const folderName = path.basename(path.resolve(currentPath));
+
+    if (folder.counter) {
+        if (folder.untrackedFiles.length === folder.counter) {
+            console.log(
+                chalk`{${rgb.white}.${bgRgb.orangeD}.bold  ${folderName} }{${rgb.orange} }`,
+            );
+        } else {
+            console.log(
+                chalk`{${rgb.white}.${bgRgb.redD}.bold  ${folderName} }{${rgb.red} }`,
+            );
+        }
+    } else if (folder.commitAheadMsg) {
+        console.log(
+            chalk`{${rgb.white}.${bgRgb.greenD}.bold  ${folderName} }{${rgb.green} }`,
+        );
+    }
 };
 
 const gitStatus = async (currentPath) => {
@@ -141,18 +173,15 @@ const gitStatus = async (currentPath) => {
             }
 
             if (folder.counter || folder.commitAheadMsg) {
-                const folderName = path.basename(path.resolve(currentPath));
-                console.log(
-                    chalk`{rgb(255, 255, 255).bgRgb(128, 179, 255)  }{rgb(255, 0, 0).bgRgb(128, 179, 255).bold ${folderName} }{rgb(26, 117, 255) }`,
-                );
-                printStatus(folder);
+                printFolderStatus(currentPath, folder);
+                printFileStatus(folder);
             }
 
             return true;
         } catch (error) {
             const folderName = path.basename(path.resolve(currentPath));
             console.log(
-                chalk`{rgb(255, 255, 255).bgRgb(128, 179, 255)  }{rgb(255, 0, 0).bgRgb(128, 179, 255).bold ${folderName} }{rgb(26, 117, 255) }`,
+                chalk`{${rgb.white}.${bgRgb.redD}.bold  ${folderName} }{${rgb.red} }`,
             );
             console.log();
             console.log(
