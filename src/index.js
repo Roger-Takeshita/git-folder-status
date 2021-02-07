@@ -16,7 +16,9 @@ const checkCurrentFolder = async (currentPath, basePath, counter) => {
 
             printFileStatus(gitFolder);
         } else {
-            const files = fs.readdirSync(currentPath);
+            const files = fs
+                .readdirSync(currentPath)
+                .sort((a, b) => a.localeCompare(b));
 
             for (let i = 0; i < files.length; i += 1) {
                 const nextFile = `${currentPath}/${files[i]}`;
@@ -30,7 +32,8 @@ const checkCurrentFolder = async (currentPath, basePath, counter) => {
                     fs.lstatSync(nextFile).isDirectory()
                 ) {
                     const newCounter = counter + 1;
-                    checkCurrentFolder(nextFile, basePath, newCounter);
+                    // eslint-disable-next-line no-await-in-loop
+                    await checkCurrentFolder(nextFile, basePath, newCounter);
                 }
             }
         }
@@ -39,4 +42,12 @@ const checkCurrentFolder = async (currentPath, basePath, counter) => {
     }
 };
 
-checkCurrentFolder(process.cwd(), process.cwd(), 0);
+const init = async () => {
+    console.time('Done in');
+    await checkCurrentFolder(process.cwd(), process.cwd(), 0);
+    console.log();
+    console.timeEnd('Done in');
+    console.log();
+};
+
+init();
