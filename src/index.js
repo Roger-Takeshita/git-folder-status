@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const chalk = require('chalk');
 const fs = require('fs');
 const fsPromises = fs.promises;
 const { gitStatus } = require('./git');

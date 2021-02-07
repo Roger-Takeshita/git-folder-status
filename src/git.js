@@ -54,11 +54,46 @@ const checkFileStatus = (file) => {
     return { mode, name };
 };
 
+const printStatus = (files) => {
+    console.log();
+    files.stagedModifiedFiles.forEach((file) =>
+        console.log(
+            chalk`    {rgb(255,255,255).bgRgb(51, 153, 51)  M } {green ${file}}`,
+        ),
+    );
+    files.stagedNewFiles.forEach((file) =>
+        console.log(
+            chalk`    {rgb(255,255,255).bgRgb(51, 153, 51)  N } {green ${file}}`,
+        ),
+    );
+    files.stagedDeletedFiles.forEach((file) =>
+        console.log(
+            chalk`    {rgb(255,255,255).bgRgb(51, 153, 51)  D } {green ${file}}`,
+        ),
+    );
+    files.notStagedModifiedActiveFiles.forEach((file) =>
+        console.log(
+            chalk`    {rgb(255,255,255).bgRgb(255, 77, 77)  M } {red ${file}}`,
+        ),
+    );
+    files.notStagedDeletedFiles.forEach((file) =>
+        console.log(
+            chalk`    {rgb(255,255,255).bgRgb(255, 77, 77)  D } {red ${file}}`,
+        ),
+    );
+    files.untrackedFiles.forEach((file) =>
+        console.log(
+            chalk`    {rgb(255,255,255).bgRgb(230, 138, 0)  ? } {rgb(230, 138, 0) ${file}}`,
+        ),
+    );
+    console.log();
+};
+
 const gitStatus = async (currentPath) => {
     if (fs.existsSync(`${currentPath}/.git`)) {
         try {
-            const folder = new FileStatus();
             process.chdir(currentPath);
+            const folder = new FileStatus();
             let mode = '';
             const { stdout } = await exec('git status');
             const filesArray = stdout
@@ -82,21 +117,32 @@ const gitStatus = async (currentPath) => {
                 }
 
                 if (mode && filesArray[i] && !filesArray[i].includes('(use')) {
-                    const file = checkFileStatus(filesArray[i]);
-
-                    folder.sortFile(file, mode);
+                    folder.sortFile(checkFileStatus(filesArray[i]), mode);
                     folder.counter++;
                 }
             }
 
             if (folder.counter) {
-                console.log(path.basename(path.resolve(currentPath)));
-                console.log(folder);
+                const folderName = path.basename(path.resolve(currentPath));
+                console.log(
+                    chalk`{rgb(255, 255, 255).bgRgb(128, 179, 255)  }{rgb(255, 0, 0).bgRgb(128, 179, 255).bold ${folderName} }{rgb(26, 117, 255) }`,
+                );
+                printStatus(folder);
             }
 
             return true;
         } catch (error) {
-            console.log(error);
+            const folderName = path.basename(path.resolve(currentPath));
+            console.log(
+                chalk`{rgb(255, 255, 255).bgRgb(128, 179, 255)  }{rgb(255, 0, 0).bgRgb(128, 179, 255).bold ${folderName} }{rgb(26, 117, 255) }`,
+            );
+            console.log();
+            console.log(
+                chalk.red.bold('    ERROR: ') +
+                    `Not a git repository ` +
+                    chalk.rgb(0, 102, 255)(currentPath),
+            );
+            console.log();
         }
     }
 
