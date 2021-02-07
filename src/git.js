@@ -12,6 +12,7 @@ class FileStatus {
         this.notStagedModifiedActiveFiles = [];
         this.notStagedDeletedFiles = [];
         this.untrackedFiles = [];
+        this.commitAheadMsg = '';
         this.counter = 0;
     }
     sortFile(file, mode) {
@@ -37,6 +38,9 @@ class FileStatus {
                 break;
         }
     }
+    updateCommitAheadMsg(msg) {
+        this.commitAheadMsg = msg;
+    }
 }
 
 const checkFileStatus = (file) => {
@@ -56,6 +60,11 @@ const checkFileStatus = (file) => {
 
 const printStatus = (files) => {
     console.log();
+    if (files.commitAheadMsg) {
+        console.log(
+            chalk`    {rgb(255,255,255).bgRgb(51, 153, 51)  C } {green ${files.commitAheadMsg}}`,
+        );
+    }
     files.stagedModifiedFiles.forEach((file) =>
         console.log(
             chalk`    {rgb(255,255,255).bgRgb(51, 153, 51)  M } {green ${file}}`,
@@ -102,6 +111,15 @@ const gitStatus = async (currentPath) => {
                 .split('\n');
 
             for (let i = 0; i < filesArray.length; i += 1) {
+                if (mode === '') {
+                    const ahead = filesArray[i].match(/Your branch is ahead.+/);
+
+                    if (ahead) {
+                        folder.updateCommitAheadMsg(ahead[0]);
+                        continue;
+                    }
+                }
+
                 switch (filesArray[i]) {
                     case 'Changes to be committed:':
                         mode = 'staged';
@@ -122,7 +140,7 @@ const gitStatus = async (currentPath) => {
                 }
             }
 
-            if (folder.counter) {
+            if (folder.counter || folder.commitAheadMsg) {
                 const folderName = path.basename(path.resolve(currentPath));
                 console.log(
                     chalk`{rgb(255, 255, 255).bgRgb(128, 179, 255)  }{rgb(255, 0, 0).bgRgb(128, 179, 255).bold ${folderName} }{rgb(26, 117, 255) }`,
