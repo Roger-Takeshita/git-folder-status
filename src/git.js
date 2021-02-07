@@ -4,7 +4,6 @@ const path = require('path');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const { rgb, bgRgb } = require('./colors');
-const { printFileStatus, printFolderStatus } = require('./print');
 
 class FileStatus {
     constructor() {
@@ -62,7 +61,7 @@ const checkFileStatus = (file) => {
     return { mode, name };
 };
 
-const gitStatus = async (currentPath) => {
+const gitStatus = async (currentPath, basePath) => {
     if (fs.existsSync(`${currentPath}/.git`)) {
         try {
             process.chdir(currentPath);
@@ -106,7 +105,7 @@ const gitStatus = async (currentPath) => {
 
             return folder;
         } catch (error) {
-            const folderName = path.basename(path.resolve(currentPath));
+            const folderName = path.relative(basePath, currentPath);
             console.log(
                 chalk`{${rgb.white}.${bgRgb.redD}.bold  ${folderName} }{${rgb.red} }`,
             );

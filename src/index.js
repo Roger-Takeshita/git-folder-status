@@ -2,41 +2,41 @@
 
 const fs = require('fs');
 
-const fsPromises = fs.promises;
 const { gitStatus } = require('./git');
 const { printFileStatus, printFolderStatus } = require('./print');
 
-const checkCurrentFolder = async (currentPath, counter) => {
-    const gitFolder = await gitStatus(currentPath);
+const checkCurrentFolder = async (currentPath, basePath, counter) => {
+    try {
+        const gitFolder = await gitStatus(currentPath, basePath);
 
-    if (!gitFolder) {
-        const dir = await fsPromises.opendir(currentPath);
-        let dirent = await dir.read();
-        while (dirent !== null) {
-            const nextPath = `${currentPath}/${dirent.name}`;
-            // eslint-disable-next-line no-await-in-loop
-            const nextDir = await fsPromises.lstat(nextPath);
+        if (gitFolder && (gitFolder.counter || gitFolder.commitAheadMsg)) {
+            if (counter > 0) {
+                printFolderStatus(currentPath, basePath, gitFolder);
+            }
 
-            if (nextDir.isDirectory()) {
+            printFileStatus(gitFolder);
+        } else {
+            const files = fs.readdirSync(currentPath);
+
+            for (let i = 0; i < files.length; i += 1) {
+                const nextFile = `${currentPath}/${files[i]}`;
+
                 if (
-                    dirent.name !== '.git' &&
-                    dirent.name !== 'node_modules' &&
-                    dirent.name !== 'node_modules.nosync'
+                    files[i] !== '.rvm' &&
+                    files[i] !== '.vscode' &&
+                    files[i] !== '.git' &&
+                    files[i] !== 'node_modules' &&
+                    files[i] !== 'node_modules.nosync' &&
+                    fs.lstatSync(nextFile).isDirectory()
                 ) {
-                    checkCurrentFolder(nextPath, (counter += 1));
+                    const newCounter = counter + 1;
+                    checkCurrentFolder(nextFile, basePath, newCounter);
                 }
             }
-            // eslint-disable-next-line no-await-in-loop
-            dirent = await dir.read();
         }
-
-        await dir.close();
-    }
-
-    if (gitFolder && (gitFolder.counter || gitFolder.commitAheadMsg)) {
-        if (counter > 0) printFolderStatus(currentPath, gitFolder);
-        printFileStatus(gitFolder);
+    } catch (error) {
+        console.log(error);
     }
 };
 
-checkCurrentFolder(process.cwd(), 0);
+checkCurrentFolder(process.cwd(), process.cwd(), 0);

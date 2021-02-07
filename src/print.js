@@ -38,11 +38,11 @@ const printFileStatus = (files) => {
     console.log();
 };
 
-const printFolderStatus = (currentPath, folder) => {
-    const folderName = path.basename(path.resolve(currentPath));
+const printFolderStatus = (currentPath, basePath, gitFolder) => {
+    const folderName = path.relative(basePath, currentPath);
 
-    if (folder.counter) {
-        if (folder.untrackedFiles.length === folder.counter) {
+    if (gitFolder.counter) {
+        if (gitFolder.untrackedFiles.length === gitFolder.counter) {
             console.log(
                 chalk`{${rgb.white}.${bgRgb.orangeD}.bold  ${folderName} }{${rgb.orange} }`,
             );
@@ -51,7 +51,7 @@ const printFolderStatus = (currentPath, folder) => {
                 chalk`{${rgb.white}.${bgRgb.redD}.bold  ${folderName} }{${rgb.red} }`,
             );
         }
-    } else if (folder.commitAheadMsg) {
+    } else if (gitFolder.commitAheadMsg) {
         console.log(
             chalk`{${rgb.white}.${bgRgb.greenD}.bold  ${folderName} }{${rgb.green} }`,
         );
