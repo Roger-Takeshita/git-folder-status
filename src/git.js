@@ -3,22 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-
-const rgb = {
-    white: 'rgb(255,255,255)',
-    green: 'rgb(51, 153, 51)',
-    orange: 'rgb(255, 153, 51)',
-    red: 'rgb(255, 77, 77)',
-};
-
-const bgRgb = {
-    green: 'bgRgb(51, 153, 51)',
-    greenD: 'bgRgb(0, 102, 0)',
-    orange: 'bgRgb(255, 153, 51)',
-    orangeD: 'bgRgb(255, 102, 0)',
-    red: 'bgRgb(255, 77, 77)',
-    redD: 'bgRgb(204, 0, 0)',
-};
+const { rgb, bgRgb } = require('./colors');
+const { printFileStatus, printFolderStatus } = require('./print');
 
 class FileStatus {
     constructor() {
@@ -31,6 +17,7 @@ class FileStatus {
         this.commitAheadMsg = '';
         this.counter = 0;
     }
+
     sortFile(file, mode) {
         switch (mode) {
             case 'staged':
@@ -54,6 +41,7 @@ class FileStatus {
                 break;
         }
     }
+
     updateCommitAheadMsg(msg) {
         this.commitAheadMsg = msg;
     }
@@ -72,62 +60,6 @@ const checkFileStatus = (file) => {
     }
 
     return { mode, name };
-};
-
-const printFileStatus = (files) => {
-    console.log();
-    if (files.commitAheadMsg) {
-        console.log(
-            chalk`    {${rgb.white}.${bgRgb.green}  C } {green ${files.commitAheadMsg}}`,
-        );
-    }
-    files.stagedModifiedFiles.forEach((file) =>
-        console.log(
-            chalk`    {${rgb.white}.${bgRgb.green}  M } {green ${file}}`,
-        ),
-    );
-    files.stagedNewFiles.forEach((file) =>
-        console.log(
-            chalk`    {${rgb.white}.${bgRgb.green}  N } {green ${file}}`,
-        ),
-    );
-    files.stagedDeletedFiles.forEach((file) =>
-        console.log(
-            chalk`    {${rgb.white}.${bgRgb.green}  D } {green ${file}}`,
-        ),
-    );
-    files.notStagedModifiedActiveFiles.forEach((file) =>
-        console.log(chalk`    {${rgb.white}.${bgRgb.red}  M } {red ${file}}`),
-    );
-    files.notStagedDeletedFiles.forEach((file) =>
-        console.log(chalk`    {${rgb.white}.${bgRgb.red}  D } {red ${file}}`),
-    );
-    files.untrackedFiles.forEach((file) =>
-        console.log(
-            chalk`    {${rgb.white}.${bgRgb.orange}  ? } {${rgb.orange} ${file}}`,
-        ),
-    );
-    console.log();
-};
-
-const printFolderStatus = (currentPath, folder) => {
-    const folderName = path.basename(path.resolve(currentPath));
-
-    if (folder.counter) {
-        if (folder.untrackedFiles.length === folder.counter) {
-            console.log(
-                chalk`{${rgb.white}.${bgRgb.orangeD}.bold  ${folderName} }{${rgb.orange} }`,
-            );
-        } else {
-            console.log(
-                chalk`{${rgb.white}.${bgRgb.redD}.bold  ${folderName} }{${rgb.red} }`,
-            );
-        }
-    } else if (folder.commitAheadMsg) {
-        console.log(
-            chalk`{${rgb.white}.${bgRgb.greenD}.bold  ${folderName} }{${rgb.green} }`,
-        );
-    }
 };
 
 const gitStatus = async (currentPath) => {
@@ -168,16 +100,11 @@ const gitStatus = async (currentPath) => {
 
                 if (mode && filesArray[i] && !filesArray[i].includes('(use')) {
                     folder.sortFile(checkFileStatus(filesArray[i]), mode);
-                    folder.counter++;
+                    folder.counter += 1;
                 }
             }
 
-            if (folder.counter || folder.commitAheadMsg) {
-                printFolderStatus(currentPath, folder);
-                printFileStatus(folder);
-            }
-
-            return true;
+            return folder;
         } catch (error) {
             const folderName = path.basename(path.resolve(currentPath));
             console.log(
@@ -185,15 +112,13 @@ const gitStatus = async (currentPath) => {
             );
             console.log();
             console.log(
-                chalk.red.bold('    ERROR: ') +
-                    `Not a git repository ` +
-                    chalk.rgb(0, 102, 255)(currentPath),
+                chalk`{${rgb.redD}.bold    ERROR:} Not a git repository {${rgb.blue} ${currentPath}}`,
             );
             console.log();
         }
     }
 
-    return false;
+    return undefined;
 };
 
 module.exports = {

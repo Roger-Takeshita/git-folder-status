@@ -12,6 +12,8 @@ module.exports = {
         'indent': ['error', 4, { "SwitchCase": 1 }],
         'no-console': 'off',
         'operator-linebreak': 'off',
-        'no-continue': 'off'
+        'no-continue': 'off',
+        'implicit-arrow-linebreak': 'off',
+        'function-paren-newline': 'off'
     },
 };
