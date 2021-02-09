@@ -61,8 +61,8 @@ const checkFileStatus = (file) => {
     return { mode, name };
 };
 
-const gitStatus = async (currentPath, basePath) => {
-    if (fs.existsSync(`${currentPath}/.git`)) {
+const gitStatus = async (currentPath, basePath, middleFolder = false) => {
+    if (fs.existsSync(`${currentPath}/.git`) || middleFolder) {
         try {
             process.chdir(currentPath);
             const folder = new FileStatus();
@@ -105,15 +105,17 @@ const gitStatus = async (currentPath, basePath) => {
 
             return folder;
         } catch (error) {
-            const folderName = path.relative(basePath, currentPath);
-            console.log(
-                chalk`{${rgb.white}.${bgRgb.redD}.bold  ${folderName} }{${rgb.red} }`,
-            );
-            console.log();
-            console.log(
-                chalk`{${rgb.redD}.bold    ERROR:} Not a git repository {${rgb.blue} ${currentPath}}`,
-            );
-            console.log();
+            if (!middleFolder) {
+                const folderName = path.relative(basePath, currentPath);
+                console.log(
+                    chalk`{${rgb.white}.${bgRgb.redD}.bold  ${folderName} }{${rgb.red} }`,
+                );
+                console.log();
+                console.log(
+                    chalk`{${rgb.redD}.bold    ERROR:} Not a git repository {${rgb.blue} ${currentPath}}`,
+                );
+                console.log();
+            }
         }
     }
 
