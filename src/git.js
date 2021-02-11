@@ -13,6 +13,7 @@ class FileStatus {
         this.notStagedModifiedActiveFiles = [];
         this.notStagedDeletedFiles = [];
         this.untrackedFiles = [];
+        this.unmergedFiles = [];
         this.commitAheadMsg = '';
         this.counter = 0;
     }
@@ -35,6 +36,9 @@ class FileStatus {
                     this.notStagedDeletedFiles.push(file.name);
                 }
                 break;
+            case 'unmerged':
+                this.unmergedFiles.push(file.name);
+                break;
             default:
                 this.untrackedFiles.push(file.name);
                 break;
@@ -47,7 +51,7 @@ class FileStatus {
 }
 
 const checkFileStatus = (file) => {
-    let mode = 'modified-file';
+    let mode = '';
     let name = file;
 
     if (file.includes('deleted:')) {
@@ -55,7 +59,12 @@ const checkFileStatus = (file) => {
         name = file.replace(/deleted:[ ]*/gm, '');
     } else if (file.includes('new file:')) {
         mode = 'new-file';
-        name = file.replace(/new file:[ ]*/gm, '');
+    } else if (file.includes('both modified:')) {
+        mode = 'unmerged-file';
+        name = file.replace(/both modified:[ ]*/gm, '');
+    } else if (file.includes('modified:')) {
+        mode = 'modified-file';
+        name = file.replace(/modified:[ ]*/gm, '');
     }
 
     return { mode, name };
@@ -68,10 +77,7 @@ const gitStatus = async (currentPath, basePath, middleFolder = false) => {
             const folder = new FileStatus();
             let mode = '';
             const { stdout } = await exec('git status');
-            const filesArray = stdout
-                .replace(/\t/gm, '')
-                .replace(/modified:[ ]*/gm, '')
-                .split('\n');
+            const filesArray = stdout.replace(/\t/gm, '').split('\n');
 
             for (let i = 0; i < filesArray.length; i += 1) {
                 if (mode === '') {
@@ -92,6 +98,9 @@ const gitStatus = async (currentPath, basePath, middleFolder = false) => {
                         continue;
                     case 'Untracked files:':
                         mode = 'untracked';
+                        continue;
+                    case 'Unmerged paths:':
+                        mode = 'unmerged';
                         continue;
                     default:
                         break;

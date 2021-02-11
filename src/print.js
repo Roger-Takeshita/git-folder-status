@@ -35,6 +35,11 @@ const printFileStatus = (files) => {
             chalk`    {${rgb.white}.${bgRgb.orange}  ? } {${rgb.orange} ${file}}`,
         ),
     );
+    files.unmergedFiles.forEach((file) =>
+        console.log(
+            chalk`    {${rgb.white}.${bgRgb.blue}  U } {${rgb.blue} ${file}}`,
+        ),
+    );
     if (files.commitAheadMsg || files.counter) console.log();
 };
 
