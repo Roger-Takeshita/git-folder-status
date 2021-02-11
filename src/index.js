@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-
 const { gitStatus } = require('./git');
 const { printFileStatus, printFolderStatus } = require('./print');
+
+let counter = 0;
 
 const checkCurrentFolder = async (currentPath, basePath, folderCount) => {
     try {
@@ -20,6 +21,7 @@ const checkCurrentFolder = async (currentPath, basePath, folderCount) => {
             }
 
             printFileStatus(gitFolder);
+            counter += 1;
         } else {
             const files = fs
                 .readdirSync(currentPath)
@@ -27,7 +29,6 @@ const checkCurrentFolder = async (currentPath, basePath, folderCount) => {
 
             for (let i = 0; i < files.length; i += 1) {
                 const nextFile = `${currentPath}/${files[i]}`;
-
                 if (
                     files[i] !== '.rvm' &&
                     files[i] !== '.vscode' &&
@@ -42,33 +43,34 @@ const checkCurrentFolder = async (currentPath, basePath, folderCount) => {
                 }
             }
         }
-        return gitFolder;
     } catch (error) {
         console.log(error);
     }
-
-    return false;
 };
 
 const init = async () => {
     console.time('Done in');
-    let gitFolder = await checkCurrentFolder(process.cwd(), process.cwd(), 0);
     try {
-        if (!gitFolder) {
-            gitFolder = await gitStatus(process.cwd(), process.cwd(), true);
+        await checkCurrentFolder(process.cwd(), process.cwd(), 0);
+        if (counter === 0) {
+            const gitFolder = await gitStatus(
+                process.cwd(),
+                process.cwd(),
+                true,
+            );
             printFileStatus(gitFolder);
+            if (
+                !gitFolder.counter &&
+                !gitFolder.commitAheadMsg &&
+                !gitFolder.commitBehindMsg
+            ) {
+                console.log();
+            }
         }
     } catch (error) {
         console.log(error);
     }
 
-    if (
-        !gitFolder ||
-        (!gitFolder.counter &&
-            !gitFolder.commitAheadMsg &&
-            !gitFolder.commitBehindMsg)
-    )
-        console.log();
     console.timeEnd('Done in');
     console.log();
 };

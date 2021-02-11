@@ -3,8 +3,9 @@ const path = require('path');
 const { rgb, bgRgb } = require('./colors');
 
 const printFileStatus = (files) => {
-    if (files.commitAheadMsg || files.commitBehindMsg || files.counter)
+    if (files.commitAheadMsg || files.commitBehindMsg || files.counter) {
         console.log();
+    }
     if (files.commitAheadMsg) {
         console.log(
             chalk`    {${rgb.white}.${bgRgb.greenD}  C } {${rgb.greenD}.bold ${files.commitAheadMsg}}`,
@@ -46,8 +47,9 @@ const printFileStatus = (files) => {
             chalk`    {${rgb.white}.${bgRgb.blue}  U } {${rgb.blue} ${file}}`,
         ),
     );
-    if (files.commitAheadMsg || files.commitBehindMsg || files.counter)
+    if (files.commitAheadMsg || files.commitBehindMsg || files.counter) {
         console.log();
+    }
 };
 
 const printFolderStatus = (currentPath, basePath, gitFolder) => {
