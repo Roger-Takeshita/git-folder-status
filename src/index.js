@@ -9,7 +9,12 @@ const checkCurrentFolder = async (currentPath, basePath, folderCount) => {
     try {
         const gitFolder = await gitStatus(currentPath, basePath);
 
-        if (gitFolder && (gitFolder.counter || gitFolder.commitAheadMsg)) {
+        if (
+            gitFolder &&
+            (gitFolder.counter ||
+                gitFolder.commitAheadMsg ||
+                gitFolder.commitBehindMsg)
+        ) {
             if (folderCount > 0) {
                 printFolderStatus(currentPath, basePath, gitFolder);
             }
@@ -57,7 +62,12 @@ const init = async () => {
         console.log(error);
     }
 
-    if (!gitFolder || (!gitFolder.counter && !gitFolder.commitAheadMsg))
+    if (
+        !gitFolder ||
+        (!gitFolder.counter &&
+            !gitFolder.commitAheadMsg &&
+            !gitFolder.commitBehindMsg)
+    )
         console.log();
     console.timeEnd('Done in');
     console.log();

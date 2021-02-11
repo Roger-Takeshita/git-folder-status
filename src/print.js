@@ -3,10 +3,16 @@ const path = require('path');
 const { rgb, bgRgb } = require('./colors');
 
 const printFileStatus = (files) => {
-    if (files.commitAheadMsg || files.counter) console.log();
+    if (files.commitAheadMsg || files.commitBehindMsg || files.counter)
+        console.log();
     if (files.commitAheadMsg) {
         console.log(
             chalk`    {${rgb.white}.${bgRgb.greenD}  C } {${rgb.greenD}.bold ${files.commitAheadMsg}}`,
+        );
+    }
+    if (files.commitBehindMsg) {
+        console.log(
+            chalk`    {${rgb.white}.${bgRgb.blueD}  B } {${rgb.blue}.bold ${files.commitBehindMsg}}`,
         );
     }
     files.stagedNewFiles.forEach((file) =>
@@ -40,7 +46,8 @@ const printFileStatus = (files) => {
             chalk`    {${rgb.white}.${bgRgb.blue}  U } {${rgb.blue} ${file}}`,
         ),
     );
-    if (files.commitAheadMsg || files.counter) console.log();
+    if (files.commitAheadMsg || files.commitBehindMsg || files.counter)
+        console.log();
 };
 
 const printFolderStatus = (currentPath, basePath, gitFolder) => {
@@ -59,6 +66,10 @@ const printFolderStatus = (currentPath, basePath, gitFolder) => {
     } else if (gitFolder.commitAheadMsg) {
         console.log(
             chalk`{${rgb.white}.${bgRgb.greenD}.bold  ${folderName} }{${rgb.green} }`,
+        );
+    } else if (gitFolder.commitBehindMsg) {
+        console.log(
+            chalk`{${rgb.white}.${bgRgb.blueD}.bold  ${folderName} }{${rgb.blue} }`,
         );
     }
 };

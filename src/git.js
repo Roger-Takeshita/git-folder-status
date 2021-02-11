@@ -15,6 +15,7 @@ class FileStatus {
         this.untrackedFiles = [];
         this.unmergedFiles = [];
         this.commitAheadMsg = '';
+        this.commitBehindMsg = '';
         this.counter = 0;
     }
 
@@ -47,6 +48,10 @@ class FileStatus {
 
     updateCommitAheadMsg(msg) {
         this.commitAheadMsg = msg;
+    }
+
+    updateCommitBehindMsg(msg) {
+        this.commitBehindMsg = msg;
     }
 }
 
@@ -85,6 +90,15 @@ const gitStatus = async (currentPath, basePath, middleFolder = false) => {
 
                     if (ahead) {
                         folder.updateCommitAheadMsg(ahead[0]);
+                        continue;
+                    }
+
+                    const behind = filesArray[i].match(
+                        /Your branch is behind.+/,
+                    );
+
+                    if (behind) {
+                        folder.updateCommitBehindMsg(behind[0]);
                         continue;
                     }
                 }

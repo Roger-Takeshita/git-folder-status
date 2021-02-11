@@ -10,6 +10,7 @@ const rgb = {
 
 const bgRgb = {
     blue: 'bgRgb(0, 102, 255)',
+    blueD: 'bgRgb(0, 25, 211)',
     green: 'bgRgb(51, 153, 51)',
     greenD: 'bgRgb(0, 102, 0)',
     orange: 'bgRgb(255, 153, 51)',
