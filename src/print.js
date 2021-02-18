@@ -44,7 +44,7 @@ const printFileStatus = (files) => {
     );
     files.unmergedFiles.forEach((file) =>
         console.log(
-            chalk`    {${rgb.white}.${bgRgb.blue}  U } {${rgb.blue} ${file}}`,
+            chalk`    {${rgb.white}.${bgRgb.blue}  C } {${rgb.blue} ${file}}`,
         ),
     );
     if (files.commitAheadMsg || files.commitBehindMsg || files.counter) {

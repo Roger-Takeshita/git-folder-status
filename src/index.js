@@ -58,12 +58,17 @@ const init = async () => {
                 process.cwd(),
                 true,
             );
-            printFileStatus(gitFolder);
-            if (
-                !gitFolder.counter &&
-                !gitFolder.commitAheadMsg &&
-                !gitFolder.commitBehindMsg
-            ) {
+
+            if (gitFolder) {
+                printFileStatus(gitFolder);
+                if (
+                    !gitFolder.counter &&
+                    !gitFolder.commitAheadMsg &&
+                    !gitFolder.commitBehindMsg
+                ) {
+                    console.log();
+                }
+            } else {
                 console.log();
             }
         }
