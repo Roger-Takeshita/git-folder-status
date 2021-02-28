@@ -1,0 +1,15 @@
+{
+    "tabWidth": 4,
+    "printWidth": 80,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "singleQuote": true,
+    "overrides": [
+        {
+            "files": ["*.md"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
+}
