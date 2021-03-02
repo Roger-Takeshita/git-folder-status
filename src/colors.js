@@ -1,25 +1,27 @@
 const rgb = {
-    blue: 'rgb(0, 102, 255)',
-    green: 'rgb(51, 153, 51)',
-    greenD: 'rgb(0, 102, 0)',
-    orange: 'rgb(255, 153, 51)',
-    red: 'rgb(255, 77, 77)',
-    redD: 'rgb(204, 0, 0)',
-    white: 'rgb(255,255,255)',
+    BL: 'rgb(130, 170, 255)',
+    BLD: 'rgb(0, 102, 255)',
+    GN: 'rgb(191, 228, 138)',
+    GND: 'rgb(51, 153, 51)',
+    OG: 'rgb(255, 153, 51)',
+    OGD: 'rgb(255, 102, 0)',
+    RD: 'rgb(240, 113, 120)',
+    RDD: 'rgb(204, 10, 0)',
+    WHT: 'rgb(255,255,255)',
 };
 
-const bgRgb = {
-    blue: 'bgRgb(0, 102, 255)',
-    blueD: 'bgRgb(0, 25, 211)',
-    green: 'bgRgb(51, 153, 51)',
-    greenD: 'bgRgb(0, 102, 0)',
-    orange: 'bgRgb(255, 153, 51)',
-    orangeD: 'bgRgb(255, 102, 0)',
-    red: 'bgRgb(255, 77, 77)',
-    redD: 'bgRgb(204, 0, 0)',
+const rgbBG = {
+    BL: 'bgRgb(130, 170, 255)',
+    BLD: 'bgRgb(0, 102, 255)',
+    GN: 'bgRgb(191, 228, 138)',
+    GND: 'bgRgb(51, 153, 51)',
+    OG: 'bgRgb(255, 153, 51)',
+    OGD: 'bgRgb(255, 102, 0)',
+    RD: 'bgRgb(240, 113, 120)',
+    RDD: 'bgRgb(204, 10, 0)',
 };
 
 module.exports = {
     rgb,
-    bgRgb,
+    rgbBG,
 };

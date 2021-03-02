@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-const { rgb, bgRgb } = require('./colors');
+const { rgb, rgbBG } = require('./colors');
 
 class FileStatus {
     constructor() {
@@ -131,11 +131,11 @@ const gitStatus = async (currentPath, basePath, middleFolder = false) => {
             if (!middleFolder) {
                 const folderName = path.relative(basePath, currentPath);
                 console.log(
-                    chalk`{${rgb.white}.${bgRgb.redD}.bold  ${folderName} }{${rgb.red} }`,
+                    chalk`{${rgb.WHT}.${rgbBG.RDD}.bold  ${folderName} }{${rgb.RD} }`,
                 );
                 console.log();
                 console.log(
-                    chalk`{${rgb.redD}.bold    ERROR:} Not a git repository {${rgb.blue} ${currentPath}}`,
+                    chalk`{${rgb.RDD}.bold    ERROR:} Not a git repository {${rgb.BL} ${currentPath}}`,
                 );
                 console.log();
             }
