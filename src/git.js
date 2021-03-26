@@ -16,6 +16,7 @@ class FileStatus {
         this.unmergedFiles = [];
         this.commitAheadMsg = '';
         this.commitBehindMsg = '';
+        this.branch = '';
         this.counter = 0;
     }
 
@@ -81,9 +82,11 @@ const gitStatus = async (currentPath, basePath, middleFolder = false) => {
             process.chdir(currentPath);
             const folder = new FileStatus();
             let mode = '';
-            const { stdout } = await exec('git status');
-            const filesArray = stdout.replace(/\t/gm, '').split('\n');
+            const { stdout: branch } = await exec('git branch --show-current');
+            const { stdout: status } = await exec('git status');
+            const filesArray = status.replace(/\t/gm, '').split('\n');
 
+            folder.branch = branch.replace(/\n/gm, '');
             for (let i = 0; i < filesArray.length; i += 1) {
                 if (mode === '') {
                     const ahead = filesArray[i].match(/Your branch is ahead.+/);

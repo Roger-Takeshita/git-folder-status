@@ -62,20 +62,20 @@ const printFolderStatus = (currentPath, basePath, gitFolder) => {
     if (gitFolder.counter) {
         if (gitFolder.untrackedFiles.length === gitFolder.counter) {
             console.log(
-                chalk`{${rgb.WHT}.${rgbBG.OGD}.bold  ${folderName} }{${rgb.OG} }`,
+                chalk`{${rgb.WHT}.${rgbBG.OGD}.bold  ${folderName} }{${rgbBG.OG}.${rgb.OGD} }{${rgb.BK}.${rgbBG.OG}   ${gitFolder.branch} }{${rgb.OG} }`,
             );
         } else {
             console.log(
-                chalk`{${rgb.WHT}.${rgbBG.RDD}.bold  ${folderName} }{${rgb.RD} }`,
+                chalk`{${rgb.WHT}.${rgbBG.RDD}.bold  ${folderName} }{${rgbBG.RD}.${rgb.RDD} }{${rgb.BK}.${rgbBG.RD}   ${gitFolder.branch} }{${rgb.RD} }`,
             );
         }
     } else if (gitFolder.commitAheadMsg) {
         console.log(
-            chalk`{${rgb.WHT}.${rgbBG.GND}.bold  ${folderName} }{${rgb.GN} }`,
+            chalk`{${rgb.WHT}.${rgbBG.GND}.bold  ${folderName} }{${rgbBG.GN}.${rgb.GND} }{${rgb.BK}.${rgbBG.GN}   ${gitFolder.branch} }{${rgb.GN} }`,
         );
     } else if (gitFolder.commitBehindMsg) {
         console.log(
-            chalk`{${rgb.WHT}.${rgbBG.BLD}.bold  ${folderName} }{${rgb.BL} }`,
+            chalk`{${rgb.WHT}.${rgbBG.BLD}.bold  ${folderName} }{${rgbBG.BL}.${rgb.BLD} }{${rgb.BK}.${rgbBG.BL}   ${gitFolder.branch} }{${rgb.BL} }`,
         );
     }
 };
