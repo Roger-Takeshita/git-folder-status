@@ -1,7 +1,7 @@
 {
-    "name": "git-status",
+    "name": "gitstatus",
     "version": "1.0.0",
-    "description": "Returns the status of nested git repositories",
+    "description": "Print the git status of multiple repositories anywhere in your computer.",
     "main": "src/index.js",
     "scripts": {
         "lint": "eslint src/"
@@ -9,7 +9,7 @@
     "bin": "./src/index.js",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Roger-Takeshita/git-status.git"
+        "url": "git+https://github.com/Roger-Takeshita/gitstatus.git"
     },
     "keywords": [
         "git",
@@ -24,9 +24,9 @@
     "author": "Roger Takeshita",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/Roger-Takeshita/git-status/issues"
+        "url": "https://github.com/Roger-Takeshita/gitstatus/issues"
     },
-    "homepage": "https://github.com/Roger-Takeshita/git-status#readme",
+    "homepage": "https://github.com/Roger-Takeshita/gitstatus#readme",
     "dependencies": {
         "chalk": "^4.1.0"
     },
