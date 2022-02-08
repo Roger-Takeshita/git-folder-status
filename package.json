@@ -1,7 +1,7 @@
 {
-    "name": "gitstatus",
+    "name": "git-folder-status",
     "version": "1.0.0",
-    "description": "Print the git status of multiple repositories anywhere in your computer.",
+    "description": "Print git status of multiple repositories",
     "main": "src/index.js",
     "scripts": {
         "lint": "eslint src/"
@@ -9,7 +9,7 @@
     "bin": "./src/index.js",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Roger-Takeshita/gitstatus.git"
+        "url": "git+https://github.com/Roger-Takeshita/git-folder-status.git"
     },
     "keywords": [
         "git",
@@ -24,9 +24,9 @@
     "author": "Roger Takeshita",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/Roger-Takeshita/gitstatus/issues"
+        "url": "https://github.com/Roger-Takeshita/git-folder-status/issues"
     },
-    "homepage": "https://github.com/Roger-Takeshita/gitstatus#readme",
+    "homepage": "https://github.com/Roger-Takeshita/git-folder-status#readme",
     "dependencies": {
         "chalk": "^4.1.0"
     },

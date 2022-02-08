@@ -1,13 +1,13 @@
 ## Description
 
-Print the git status of multiple repositories anywhere in your computer.
+Print git status of multiple repositories.
 
 ## Installation
 
 Install the package globally
 
 ```Bash
-  npm install -g gitstatus
+  npm install -g git-folder-status
 ```
 
 ## Colors
@@ -31,16 +31,16 @@ Install the package globally
 
 ## Requirements
 
-- [Powerline Fonts](https://github.com/powerline/fonts) to display correctly the symbols
+- [Powerline Fonts](https://github.com/powerline/fonts) to display the correct symbols
 
 ## How to use it?
 
-On terminal go to the root of your nested repositories and run `gitstatus`
+On terminal go to the root of your nested repositories and run `git-folder-status`
 
-![](https://media.giphy.com/media/0Ij3yFOj4QYKSg5tW8/giphy.gif)
+![](https://i.imgur.com/x00wzY5.gif)
 
-You can always create an alias of your choice in `~/.zshrc` or `~/.bash_profile` instead of using `gitstatus`, eg:
+You can always create an alias of your choice in `~/.zshrc` or `~/.bash_profile` instead of using `git-folder-status`, eg:
 
 ```Bash
-  alias gs='gitstatus'
+  alias gs='git-folder-status'
 ```
