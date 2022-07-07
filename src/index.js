@@ -78,6 +78,7 @@ const init = async () => {
 
     console.timeEnd('Done in');
     console.log();
+    process.exit(0);
 };
 
 init();
