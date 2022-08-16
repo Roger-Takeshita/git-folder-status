@@ -3,57 +3,38 @@ const path = require('path');
 const { rgb, rgbBG } = require('./colors');
 
 const printFileStatus = (files) => {
-    if (files.commitAheadMsg || files.commitBehindMsg || files.counter) {
-        console.log();
-    }
+    let log = '';
+
     if (files.commitAheadMsg) {
-        console.log(
-            chalk`  {${rgb.WHT}.${rgbBG.GND2}.bold  C } {${rgb.GND2}.bold ${files.commitAheadMsg}}`,
-        );
+        log += `\n${chalk`  {${rgb.WHT}.${rgbBG.GND2}.bold  C } {${rgb.GND2}.bold ${files.commitAheadMsg}}`}`;
     }
     if (files.commitBehindMsg) {
-        console.log(
-            chalk`  {${rgb.WHT}.${rgbBG.BL}.bold  B } {${rgb.BL}.bold ${files.commitBehindMsg}}`,
-        );
+        log += `\n${chalk`  {${rgb.WHT}.${rgbBG.BL}.bold  B } {${rgb.BL}.bold ${files.commitBehindMsg}}`}`;
     }
-    files.stagedNewFiles.forEach((file) =>
-        console.log(
-            chalk`  {${rgb.WHT}.${rgbBG.GND}.bold  N } {${rgb.GND} ${file}}`,
-        ),
-    );
-    files.stagedModifiedFiles.forEach((file) =>
-        console.log(
-            chalk`  {${rgb.BK}.${rgbBG.GN}.bold  M } {${rgb.GN} ${file}}`,
-        ),
-    );
-    files.stagedDeletedFiles.forEach((file) =>
-        console.log(
-            chalk`  {${rgb.WHT}.${rgbBG.GN}.bold  D } {${rgb.GN} ${file}}`,
-        ),
-    );
-    files.notStagedModifiedActiveFiles.forEach((file) =>
-        console.log(
-            chalk`  {${rgb.WHT}.${rgbBG.RD}.bold  M } {${rgb.RD} ${file}}`,
-        ),
-    );
-    files.notStagedDeletedFiles.forEach((file) =>
-        console.log(
-            chalk`  {${rgb.WHT}.${rgbBG.RD}.bold  D } {${rgb.RD} ${file}}`,
-        ),
-    );
-    files.untrackedFiles.forEach((file) =>
-        console.log(
-            chalk`  {${rgb.WHT}.${rgbBG.OG}.bold  ? } {${rgb.OG} ${file}}`,
-        ),
-    );
-    files.unmergedFiles.forEach((file) =>
-        console.log(
-            chalk`  {${rgb.WHT}.${rgbBG.BL}.bold  C } {${rgb.BL} ${file}}`,
-        ),
-    );
-    if (files.commitAheadMsg || files.commitBehindMsg || files.counter) {
-        console.log();
-    }
+    files.stagedNewFiles.forEach((file) => {
+        log += `\n${chalk`  {${rgb.WHT}.${rgbBG.GND}.bold  N } {${rgb.GND} ${file}}`}`;
+    });
+    files.stagedModifiedFiles.forEach((file) => {
+        log += `\n${chalk`  {${rgb.BK}.${rgbBG.GN}.bold  M } {${rgb.GN} ${file}}`}`;
+    });
+    files.stagedDeletedFiles.forEach((file) => {
+        log += `\n${chalk`  {${rgb.WHT}.${rgbBG.GN}.bold  D } {${rgb.GN} ${file}}`}`;
+    });
+    files.notStagedModifiedActiveFiles.forEach((file) => {
+        log += `\n${chalk`  {${rgb.WHT}.${rgbBG.RD}.bold  M } {${rgb.RD} ${file}}`}`;
+    });
+    files.notStagedDeletedFiles.forEach((file) => {
+        log += `\n${chalk`  {${rgb.WHT}.${rgbBG.RD}.bold  D } {${rgb.RD} ${file}}`}`;
+    });
+    files.untrackedFiles.forEach((file) => {
+        log += `\n${chalk`  {${rgb.WHT}.${rgbBG.OG}.bold  ? } {${rgb.OG} ${file}}`}`;
+    });
+    files.unmergedFiles.forEach((file) => {
+        log += `\n${chalk`  {${rgb.WHT}.${rgbBG.BL}.bold  C } {${rgb.BL} ${file}}`}`;
+    });
+
+    console.log(log);
+    if (log.length) console.log();
 };
 
 const printFolderStatus = (currentPath, basePath, gitFolder) => {

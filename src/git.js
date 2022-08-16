@@ -138,7 +138,7 @@ const gitStatus = async (currentPath, basePath, middleFolder = false) => {
                 );
                 console.log();
                 console.log(
-                    chalk`{${rgb.RDD}.bold  ERROR:} Not a git repository {${rgb.BL} ${currentPath}}`,
+                    chalk`{${rgb.RDD}.bold   ERROR:} Not a git repo or something is wrong with your .git folder.\n         {${rgb.BL} ${currentPath}}`,
                 );
                 console.log();
             }
