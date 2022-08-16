@@ -9,11 +9,12 @@ module.exports = {
         ecmaVersion: 12,
     },
     rules: {
-        'indent': ['error', 4, { "SwitchCase": 1 }],
+        indent: ['error', 4, { SwitchCase: 1 }],
         'no-console': 'off',
         'operator-linebreak': 'off',
         'no-continue': 'off',
         'implicit-arrow-linebreak': 'off',
-        'function-paren-newline': 'off'
+        'function-paren-newline': 'off',
+        'no-restricted-syntax': 'off',
     },
 };

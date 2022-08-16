@@ -1,6 +1,6 @@
 {
     "name": "git-folder-status",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Print git status of multiple repositories",
     "main": "src/index.js",
     "scripts": {

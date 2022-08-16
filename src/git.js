@@ -87,26 +87,22 @@ const gitStatus = async (currentPath, basePath, middleFolder = false) => {
             const filesArray = status.replace(/\t/gm, '').split('\n');
 
             folder.branch = branch.replace(/\n/gm, '');
-            for (let i = 0; i < filesArray.length; i += 1) {
+            for (const file of filesArray) {
                 if (mode === '') {
-                    const ahead = filesArray[i].match(/Your branch is ahead.+/);
-
+                    const ahead = file.match(/Your branch is ahead.+/);
                     if (ahead) {
                         folder.updateCommitAheadMsg(ahead[0]);
                         continue;
                     }
 
-                    const behind = filesArray[i].match(
-                        /Your branch is behind.+/,
-                    );
-
+                    const behind = file.match(/Your branch is behind.+/);
                     if (behind) {
                         folder.updateCommitBehindMsg(behind[0]);
                         continue;
                     }
                 }
 
-                switch (filesArray[i]) {
+                switch (file) {
                     case 'Changes to be committed:':
                         mode = 'staged';
                         continue;
@@ -123,8 +119,8 @@ const gitStatus = async (currentPath, basePath, middleFolder = false) => {
                         break;
                 }
 
-                if (mode && filesArray[i] && !filesArray[i].includes('(use')) {
-                    folder.sortFile(checkFileStatus(filesArray[i]), mode);
+                if (mode && file && !file.includes('(use')) {
+                    folder.sortFile(checkFileStatus(file), mode);
                     folder.counter += 1;
                 }
             }
